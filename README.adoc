@@ -1,0 +1,6 @@
+= The SQL Graph in Clojure
+
+== License
+
+&copy; 2022 Fern Flower Lab
+
