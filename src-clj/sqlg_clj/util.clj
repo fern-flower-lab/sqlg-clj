@@ -1,4 +1,4 @@
-(ns core.util
+(ns sqlg-clj.util
   (:import (java.util.function Function Consumer Predicate BiPredicate BiFunction BinaryOperator UnaryOperator Supplier)
            (org.apache.tinkerpop.gremlin.process.traversal.dsl.graph GraphTraversal)
            (org.apache.tinkerpop.gremlin.process.traversal Traversal)))

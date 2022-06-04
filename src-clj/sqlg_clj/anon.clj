@@ -1,6 +1,6 @@
-(ns core.anon
+(ns sqlg-clj.anon
   (:refer-clojure :exclude [and count drop filter group-by key key identity iterate loop map max min next not or range repeat reverse shuffle])
-  (:require [sqlg-clj.core.util :as util])
+  (:require [sqlg-clj.util :as util])
   (:import (org.apache.tinkerpop.gremlin.process.traversal Operator P Pop Scope Traversal)
            (org.apache.tinkerpop.gremlin.structure T Column VertexProperty$Cardinality)
            (org.apache.tinkerpop.gremlin.process.traversal.dsl.graph GraphTraversal)))

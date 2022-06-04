@@ -1,13 +1,17 @@
-(ns core.common
+(ns sqlg-clj.core
   (:refer-clojure :exclude [and count drop filter group-by key key identity iterate loop map max min next not or range repeat reverse sort shuffle])
   (:require [potemkin :as po]
-            [sqlg-clj.core.util :as util]
-            [sqlg-clj.core.anon :as anon])
+            [sqlg-clj.util :as util]
+            [sqlg-clj.anon :as anon])
   (:import (org.apache.tinkerpop.gremlin.process.traversal Operator Order P Pop SackFunctions$Barrier Scope Traversal)
            (org.apache.tinkerpop.gremlin.process.remote RemoteConnection)
            (org.apache.tinkerpop.gremlin.structure Graph T Column VertexProperty$Cardinality Vertex)
            (org.apache.tinkerpop.gremlin.structure.util GraphFactory)
-           (org.apache.tinkerpop.gremlin.process.traversal.dsl.graph GraphTraversal GraphTraversalSource)))
+           (org.apache.tinkerpop.gremlin.process.traversal.dsl.graph GraphTraversal GraphTraversalSource)
+           (clojure.lang IFn)
+           (java.util.function BinaryOperator UnaryOperator)
+           (org.apache.commons.configuration2 Configuration)
+           (java.util Comparator)))
 
 (po/import-macro util/traverse)
 (po/import-macro anon/__)
@@ -41,52 +45,52 @@
 
 ; Common Functionality between GraphTraversalSource and GraphTraversal
 (defmulti add-V
-  "Adds a vertex to the traversal."
-  (fn
-    ([g _] (class g))
-    ([g] (class g))))
+          "Adds a vertex to the traversal."
+          (fn
+            ([g _] (class g))
+            ([g] (class g))))
 
 (defmethod add-V GraphTraversal
   ([^GraphTraversal g] (.addV g))
   ([^GraphTraversal g label-or-traversal]
-    (if (instance? GraphTraversal label-or-traversal)
-      (.addV g ^GraphTraversal label-or-traversal)
-      (.addV g ^String (util/cast-param label-or-traversal)))))
+   (if (instance? GraphTraversal label-or-traversal)
+     (.addV g ^GraphTraversal label-or-traversal)
+     (.addV g ^String (util/cast-param label-or-traversal)))))
 
 (defmethod add-V GraphTraversalSource
   ([^GraphTraversalSource g] (.addV g))
   ([^GraphTraversalSource g label-or-traversal]
-    (if (instance? GraphTraversal label-or-traversal)
-      (.addV g ^GraphTraversal label-or-traversal)
-      (.addV g ^String (util/cast-param label-or-traversal)))))
+   (if (instance? GraphTraversal label-or-traversal)
+     (.addV g ^GraphTraversal label-or-traversal)
+     (.addV g ^String (util/cast-param label-or-traversal)))))
 
 (def addV
   "Adds a vertex to the traversal. `addV` is equivalent to `add-V`."
   add-V)
 
 (defmulti add-E
-  "Adds an edge to the traversal"
-  (fn [g _] (class g)))
+          "Adds an edge to the traversal"
+          (fn [g _] (class g)))
 
 (defmethod add-E GraphTraversal
   ([^GraphTraversal g label-or-traversal]
-    (if (instance? GraphTraversal label-or-traversal)
-      (.addE g ^GraphTraversal label-or-traversal)
-      (.addE g ^String (util/cast-param label-or-traversal)))))
+   (if (instance? GraphTraversal label-or-traversal)
+     (.addE g ^GraphTraversal label-or-traversal)
+     (.addE g ^String (util/cast-param label-or-traversal)))))
 
 (defmethod add-E GraphTraversalSource
   ([^GraphTraversalSource g label-or-traversal]
-    (if (instance? GraphTraversal label-or-traversal)
-      (.addE g ^GraphTraversal label-or-traversal)
-      (.addE g ^String (util/cast-param label-or-traversal)))))
+   (if (instance? GraphTraversal label-or-traversal)
+     (.addE g ^GraphTraversal label-or-traversal)
+     (.addE g ^String (util/cast-param label-or-traversal)))))
 
 (def addE
   "Adds an edge to the traversal. `addE` is equivalent to `add-E`."
   add-E)
 
 (defmulti V
-  "Returns all vertices matching the supplied ids. If no ids are supplied, returns all vertices."
-  (fn [g & _] (class g)))
+          "Returns all vertices matching the supplied ids. If no ids are supplied, returns all vertices."
+          (fn [g & _] (class g)))
 
 (defmethod V GraphTraversal
   [^GraphTraversal g & ids]
@@ -108,8 +112,8 @@
   (.E g (into-array ids)))
 
 (defmulti inject
-  "Injects an arbitrary set of objects into the traversal stream"
-  (fn [g & _] (class g)))
+          "Injects an arbitrary set of objects into the traversal stream"
+          (fn [g & _] (class g)))
 
 (defmethod inject GraphTraversal
   [^GraphTraversal g & args]
@@ -133,67 +137,57 @@
 
 (defn with-sack
   ([^GraphTraversalSource g arg]
-   (if (instance? clojure.lang.IFn arg)
+   (if (instance? IFn arg)
      (.withSack g (util/f-to-supplier arg))
      (.withSack g arg)))
   ([^GraphTraversalSource g arg m]
-    (let [^java.util.function.BinaryOperator merge-operator (if (contains? m :merge)
-                                                              (if (instance? Operator (:merge m)) (:merge m) (util/f-to-binaryoperator (:merge m)))
-                                                              nil)
-          ^java.util.function.UnaryOperator split-operator (if (contains? m :split)
-                                                             (if (instance? Operator (:split m)) (:split m) (util/f-to-unaryoperator (:split m)))
-                                                             nil)]
-      (if (instance? clojure.lang.IFn arg)
-        (cond
-          (clojure.core/and (nil? merge-operator) (nil? split-operator))
-          (.withSack g (util/f-to-supplier arg))
-          (nil? merge-operator)
-          (.withSack g (util/f-to-supplier arg) split-operator)
-          (nil? split-operator)
-          (.withSack g (util/f-to-supplier arg) merge-operator)
-          :else
-          (.withSack g (util/f-to-supplier arg) split-operator merge-operator))
-        (cond
-          (clojure.core/and (nil? merge-operator) (nil? split-operator))
-          (.withSack g arg)
-          (nil? merge-operator)
-          (.withSack g arg split-operator)
-          (nil? split-operator)
-          (.withSack g arg merge-operator)
-          :else
-          (.withSack g arg split-operator merge-operator))))))
+   (let [^BinaryOperator merge-operator (if (contains? m :merge)
+                                          (if (instance? Operator (:merge m)) (:merge m) (util/f-to-binaryoperator (:merge m)))
+                                          nil)
+         ^UnaryOperator split-operator (if (contains? m :split)
+                                         (if (instance? Operator (:split m)) (:split m) (util/f-to-unaryoperator (:split m)))
+                                         nil)]
+     (if (instance? IFn arg)
+       (cond
+         (clojure.core/and (nil? merge-operator) (nil? split-operator))
+         (.withSack g (util/f-to-supplier arg))
+         (nil? merge-operator)
+         (.withSack g (util/f-to-supplier arg) split-operator)
+         (nil? split-operator)
+         (.withSack g (util/f-to-supplier arg) merge-operator)
+         :else
+         (.withSack g (util/f-to-supplier arg) split-operator merge-operator))
+       (cond
+         (clojure.core/and (nil? merge-operator) (nil? split-operator))
+         (.withSack g arg)
+         (nil? merge-operator)
+         (.withSack g arg split-operator)
+         (nil? split-operator)
+         (.withSack g arg merge-operator)
+         :else
+         (.withSack g arg split-operator merge-operator))))))
 
 (defn with-side-effect
   ([^GraphTraversalSource g ^String k v]
-    (if (instance? clojure.lang.IFn v)
-      (.withSideEffect g ^String (util/cast-param k) (util/f-to-supplier v))
-      (.withSideEffect g ^String (util/cast-param k) v)))
+   (if (instance? IFn v)
+     (.withSideEffect g ^String (util/cast-param k) (util/f-to-supplier v))
+     (.withSideEffect g ^String (util/cast-param k) v)))
   ([^GraphTraversalSource g ^String k v r]
    (if (instance? Operator r)
-     (if (instance? clojure.lang.IFn v)
-        (.withSideEffect g ^String (util/cast-param k) (util/f-to-supplier v) ^Operator r)
-        (.withSideEffect g ^String (util/cast-param k) v ^Operator r))
-     (if (instance? clojure.lang.IFn v)
-        (.withSideEffect g ^String (util/cast-param k) (util/f-to-supplier v) (util/f-to-binaryoperator r))
-        (.withSideEffect g ^String (util/cast-param k) v (util/f-to-binaryoperator r))))))
-
-(defn with-remote
-  [^GraphTraversalSource g conn]
-  (cond
-    (instance? org.apache.commons.configuration.Configuration conn)
-    (.withRemote g ^org.apache.commons.configuration.Configuration conn)
-    (instance? String conn)
-    (.withRemote g ^String conn)
-    (instance? org.apache.tinkerpop.gremlin.process.remote.RemoteConnection conn)
-    (.withRemote g ^org.apache.tinkerpop.gremlin.process.remote.RemoteConnection conn)))
+     (if (instance? IFn v)
+       (.withSideEffect g ^String (util/cast-param k) (util/f-to-supplier v) ^Operator r)
+       (.withSideEffect g ^String (util/cast-param k) v ^Operator r))
+     (if (instance? IFn v)
+       (.withSideEffect g ^String (util/cast-param k) (util/f-to-supplier v) (util/f-to-binaryoperator r))
+       (.withSideEffect g ^String (util/cast-param k) v (util/f-to-binaryoperator r))))))
 
 ; GraphTraversal
 
 (defn aggregate
   ([^GraphTraversal t k]
-  (.aggregate t (util/cast-param k)))
+   (.aggregate t (util/cast-param k)))
   ([^GraphTraversal t scope k]
-  (.aggregate t scope (util/cast-param k))))
+   (.aggregate t scope (util/cast-param k))))
 
 (defn and
   [^GraphTraversal t & traversals]
@@ -212,7 +206,7 @@
    (cond
      (instance? SackFunctions$Barrier max-or-consumer)
      (.barrier t ^SackFunctions$Barrier max-or-consumer)
-     (instance? clojure.lang.IFn max-or-consumer)
+     (instance? IFn max-or-consumer)
      (.barrier t (util/f-to-consumer max-or-consumer))
      :else
      (.barrier t (int max-or-consumer)))))
@@ -250,8 +244,8 @@
      (.by t ^Column arg1)
      (instance? Order arg1)
      (.by t ^Order arg1)
-     (instance? java.util.Comparator arg1)
-     (.by t ^java.util.Comparator arg1)
+     (instance? Comparator arg1)
+     (.by t ^Comparator arg1)
      (instance? T arg1)
      (.by t ^T arg1)
      (instance? Traversal arg1)
@@ -261,17 +255,17 @@
      (.by t (util/f-to-function arg1))
      (cond
        (keyword? arg1)
-       (.by t ^String (util/cast-param arg1) ^java.util.Comparator compar)
+       (.by t ^String (util/cast-param arg1) ^Comparator compar)
        (instance? Column arg1)
-       (.by t ^Column arg1 ^java.util.Comparator compar)
-       (instance? clojure.lang.IFn arg1)
-       (.by t (util/f-to-function arg1) ^java.util.Comparator compar)
+       (.by t ^Column arg1 ^Comparator compar)
+       (instance? IFn arg1)
+       (.by t (util/f-to-function arg1) ^Comparator compar)
        (instance? T arg1)
-       (.by t ^T arg1 ^java.util.Comparator compar)
+       (.by t ^T arg1 ^Comparator compar)
        (instance? String arg1)
-       (.by t ^String arg1 ^java.util.Comparator compar)
+       (.by t ^String arg1 ^Comparator compar)
        (instance? Traversal arg1)
-       (.by t ^Traversal arg1 ^java.util.Comparator compar)))))
+       (.by t ^Traversal arg1 ^Comparator compar)))))
 
 (defn cap
   [^GraphTraversal t k & ks]
@@ -425,11 +419,11 @@
 
 (defn has-label
   ([^GraphTraversal t label-or-pred]
-    (if (instance? P label-or-pred)
-      (.hasLabel t ^P label-or-pred)
-      (.hasLabel t (util/cast-param label-or-pred) (util/str-array []))))
+   (if (instance? P label-or-pred)
+     (.hasLabel t ^P label-or-pred)
+     (.hasLabel t (util/cast-param label-or-pred) (util/str-array []))))
   ([^GraphTraversal t label & labels]
-    (.hasLabel t (util/cast-param label) (util/keywords-to-str-array labels))))
+   (.hasLabel t (util/cast-param label) (util/keywords-to-str-array labels))))
 
 (defn has-not
   [^GraphTraversal t ^String k]
@@ -437,11 +431,11 @@
 
 (defn has-value
   ([^GraphTraversal t pred-or-obj]
-    (if (instance? P pred-or-obj)
-      (.hasValue t ^P pred-or-obj)
-      (.hasValue t ^Object pred-or-obj)))
+   (if (instance? P pred-or-obj)
+     (.hasValue t ^P pred-or-obj)
+     (.hasValue t ^Object pred-or-obj)))
   ([^GraphTraversal t ^Object obj & objs]
-    (.hasValue t obj (into-array objs))))
+   (.hasValue t obj (into-array objs))))
 
 (defn id
   [^GraphTraversal t]
@@ -547,7 +541,7 @@
 
 (defn or
   [^GraphTraversal t & traversals]
-   (.or t (into-array Traversal traversals)))
+  (.or t (into-array Traversal traversals)))
 
 (defn order
   ([^GraphTraversal t]
