@@ -11,7 +11,7 @@
            (clojure.lang IFn)
            (java.util.function BinaryOperator UnaryOperator)
            (org.apache.commons.configuration2 Configuration)
-           (java.util Comparator)))
+           (java.util Comparator Map)))
 
 (po/import-macro util/traverse)
 (po/import-macro anon/__)
@@ -30,7 +30,7 @@
   ([conf]
    (cond
      (map? conf)
-     (GraphFactory/open ^java.util.Map conf)
+     (GraphFactory/open ^Map conf)
      (string? conf)
      (GraphFactory/open ^String conf))))
 
@@ -670,8 +670,9 @@
   ([^GraphTraversal t ^Scope scope amount]
    (.skip t scope amount)))
 
-(defn store
-  [^GraphTraversal t k]
+(defn ^{:deprecated    "0.0.1"
+        :superseded-by aggregate}
+  store [^GraphTraversal t k]
   (.store t (util/cast-param k)))
 
 (defn subgraph
@@ -748,11 +749,7 @@
 
 (defn value-map
   [^GraphTraversal t & args]
-  (if (clojure.core/and (clojure.core/not (empty? args)) (instance? Boolean (first args)))
-    (if (= (clojure.core/count args) 1)
-      (.valueMap t ^Boolean (first args) (into-array String []))
-      (.valueMap t ^Boolean (first args) (util/keywords-to-str-array (rest args))))
-    (.valueMap t (util/keywords-to-str-array args))))
+  (.valueMap t (util/keywords-to-str-array args)))
 
 (defn values
   [^GraphTraversal t & ks]
