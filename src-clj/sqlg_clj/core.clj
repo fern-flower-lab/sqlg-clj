@@ -10,7 +10,7 @@
            (org.apache.tinkerpop.gremlin.process.traversal.dsl.graph GraphTraversal GraphTraversalSource)
            (clojure.lang IFn)
            (java.util.function BinaryOperator UnaryOperator)
-           (org.apache.commons.configuration2 Configuration)
+           ;(org.apache.commons.configuration2 Configuration)
            (java.util Comparator Map)))
 
 (po/import-macro util/traverse)
