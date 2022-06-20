@@ -1,4 +1,4 @@
-(defproject sqlg-clj "0.0.1"
+(defproject ai.z7/sqlg-clj "0.0.1"
   :description "The SQL Graph with Tinkerpop3 and Clojure"
   :url "https://github.com/fern-flower-lab/sqlg-clj"
   :license {:name "CURRENTLY UNSET"}
