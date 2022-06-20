@@ -6,6 +6,7 @@
                  [potemkin "0.4.5"]
                  ;[commons-io/commons-io "2.11.0"]
                  ;[org.apache.commons/commons-configuration2 "2.7"]
+                 [ai.z7/java-properties "1.0.1"]
                  [org.umlg/sqlg-postgres-dialect "2.1.6"
                   :exclusions [com.google.guava/guava]]
                  [org.umlg/sqlg-hsqldb-dialect "2.1.6"
