@@ -16,7 +16,7 @@ image:https://img.shields.io/github/last-commit/fern-flower-lab/sqlg-clj[GitHub 
 . H2
 . MSSQL
 
-CAUTION: The low-level drive well tested only with PostgreSQL + C3P0. You are warned.
+CAUTION: The low-level driver is well tested only with PostgreSQL + C3P0. You are warned.
 
 == Config
 
