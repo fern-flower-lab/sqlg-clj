@@ -1,7 +1,7 @@
 (defproject ai.z7/sqlg-clj "0.0.1"
   :description "The SQL Graph with Tinkerpop3 and Clojure"
   :url "https://github.com/fern-flower-lab/sqlg-clj"
-  :license {:name "CURRENTLY UNSET"}
+  :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [potemkin "0.4.5"]
                  ;[commons-io/commons-io "2.11.0"]

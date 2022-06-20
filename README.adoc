@@ -1,6 +1,105 @@
 = The SQL Graph in Clojure
 
+Utilizes Tinkerpop3 graph over SQL database using `sqlg`.
+
+== Supported DBs
+
+. PostgreSQL
+. MySQL
+. MariaDB
+. HSQLDB
+. H2
+. MSSQL
+
+CAUTION: The low-level drive well tested only with PostgreSQL + C3P0. You are warned.
+
+== Config
+
+Basic config is represented by `sample.properties`
+
+[source,properties]
+----
+sample.graph.db.type = postgresql
+sample.graph.db.host = localhost
+sample.graph.db.port = 5432
+sample.graph.db.name = sample
+sample.graph.db.user = username
+sample.graph.db.pass = password
+----
+
+In order to get it prepared use
+
+[source,clojure]
+----
+user=> (require '[sqlg-clj.config :as c])
+user=> (def config (-> "sample" c/load-config :sample :graph :db c/db-config))
+----
+
+Same result may be done using EDN config, i.e. directly from your app:
+
+[source,clojure]
+----
+user=> (def config (c/db-config {:port 5432 :pass "password" :user "username" :type "postgresql" :host "localhost" :name "sample"}))
+----
+
+When the config is ready it may be easily read back
+
+[source,clojure]
+----
+user=>(c/config->clj config)
+{"jdbc.url" "jdbc:postgresql://localhost:5432/sample", "jdbc.username" "username", "jdbc.password" "password"}
+----
+
+=== Starting
+
+Open SqlgGraph directly
+
+[source,clojure]
+----
+(def G (c/graph config))
+----
+
+or indirectly
+
+[source,clojure]
+----
+(def G (c/open-graph config))
+----
+
+The last method opens a new TinkerGraph with default configuration or open a new Graph instance with the specified configuration.
+The configuration may be a path to a file or a Map of configuration options.
+When gets prepared BaseConfiguration or Configuration object as an argument - returns SqlgGraph.
+
+=== Using
+
+[source,clojure]
+----
+user=> (-> ^Graph G traversal V (has-label "label"))
+#object[org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal 0x3fffba3f "[GraphStep(vertex,[]), HasStep([~label.eq(label)])]"]
+----
+
+=== Transactions
+
+In order to store or to unroll the changes were made by some iteration between calls, use
+
+[source,clojure]
+----
+user=> (require '[sqlg-clj.util :as u])
+user=> (u/commit! G)
+;; or
+user=> (u/rollback! G)
+----
+
+respectively.
+
+=== More info
+
+Please, read original documentation http://sqlg.org[here]
+
 == License
 
-&copy; 2022 Fern Flower Lab
+&copy;
 
+2022 Fern Flower Lab
+
+Distributed under the MIT License.
