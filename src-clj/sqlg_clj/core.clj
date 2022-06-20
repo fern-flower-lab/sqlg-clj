@@ -2,18 +2,17 @@
   (:refer-clojure :exclude [and count drop filter group-by key key identity iterate loop map max min next not or range repeat reverse sort shuffle])
   (:require [potemkin :as po]
             [sqlg-clj.util :as util]
-            [sqlg-clj.anon :as anon])
+            [sqlg-clj.anon :as anon]
+            [clojure.tools.logging :as log])
   (:import (org.apache.tinkerpop.gremlin.process.traversal Operator Order P Pop SackFunctions$Barrier Scope Traversal)
            (org.apache.tinkerpop.gremlin.process.remote RemoteConnection)
            (org.apache.tinkerpop.gremlin.structure Graph T Column VertexProperty$Cardinality Vertex)
-           (org.apache.tinkerpop.gremlin.structure.util GraphFactory)
            (org.apache.tinkerpop.gremlin.process.traversal.dsl.graph GraphTraversal GraphTraversalSource)
            (clojure.lang IFn)
            (java.util.function BinaryOperator UnaryOperator)
-           ;(org.apache.commons.configuration2 Configuration)
-           (java.util Comparator Map)))
+           (java.util Comparator)
+           (org.umlg.sqlg.structure SqlgGraph)))
 
-(po/import-macro util/traverse)
 (po/import-macro anon/__)
 
 (po/import-fn util/into-seq!)
@@ -23,21 +22,12 @@
 (po/import-fn util/iterate!)
 (po/import-fn util/next!)
 
-; GraphFactory
-(defn open-graph
-  "Opens a new TinkerGraph with default configuration or open a new Graph instance with the specified
-   configuration. The configuration may be a path to a file or a Map of configuration options."
-  ([conf]
-   (cond
-     (map? conf)
-     (GraphFactory/open ^Map conf)
-     (string? conf)
-     (GraphFactory/open ^String conf))))
-
 ; Embedded / Remote
 (defn traversal
   [graph-or-conn]
   (cond
+    (instance? SqlgGraph graph-or-conn)
+    (GraphTraversalSource. ^Graph graph-or-conn)
     (instance? Graph graph-or-conn)
     (GraphTraversalSource. ^Graph graph-or-conn)
     (instance? RemoteConnection graph-or-conn)

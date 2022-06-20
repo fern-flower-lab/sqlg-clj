@@ -1,12 +1,15 @@
 (ns sqlg-clj.util
   (:import (java.util.function Function Consumer Predicate BiPredicate BiFunction BinaryOperator UnaryOperator Supplier)
-           (org.apache.tinkerpop.gremlin.process.traversal.dsl.graph GraphTraversal)
-           (org.apache.tinkerpop.gremlin.process.traversal Traversal)))
+           (org.apache.tinkerpop.gremlin.process.traversal Traversal)
+           (org.umlg.sqlg.structure SqlgGraph)))
 
-(defmacro traverse
-  "Starts a traversal."
-  ^GraphTraversal [xs & body]
-  `(-> ~xs ~@body))
+;; transaction finishers
+
+(defn commit! [^SqlgGraph g]
+  (-> g .tx .commit))
+
+(defn rollback! [^SqlgGraph g]
+  (-> g .tx .rollback))
 
 ;; traversal terminators
 

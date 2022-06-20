@@ -5,8 +5,10 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [potemkin "0.4.5"]
                  ;[commons-io/commons-io "2.11.0"]
-                 ;[org.apache.commons/commons-configuration2 "2.7"]
+                 [org.apache.commons/commons-configuration2 "2.7"]
+                 [com.google.guava/guava "31.1-jre"]
                  [ai.z7/java-properties "1.0.1"]
+
                  [org.umlg/sqlg-postgres-dialect "2.1.6"
                   :exclusions [com.google.guava/guava]]
                  [org.umlg/sqlg-hsqldb-dialect "2.1.6"
@@ -25,6 +27,12 @@
   :source-paths ["src-clj"]
   :java-source-paths ["src-java"]
   :profiles {:dev     {:global-vars  {*assert* true}
+                       :dependencies [[ch.qos.logback/logback-classic "1.2.11"
+                                       :exclusions [org.slf4j/slf4j-api]]
+                                      [org.slf4j/jul-to-slf4j "1.7.36"]
+                                      [org.slf4j/jcl-over-slf4j "1.7.36"]
+                                      [org.slf4j/log4j-over-slf4j "1.7.36"]
+                                      [org.clojure/tools.logging "1.2.4"]]
                        :junit        ["src-java"]}
              :uberjar {:aot :all}}
   :plugins [[lein-junit "1.1.9"]]
