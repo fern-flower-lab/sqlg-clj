@@ -2,6 +2,11 @@
 
 Utilizes Tinkerpop3 graph over SQL database using `sqlg`.
 
+image:https://img.shields.io/github/license/fern-flower-lab/sqlg-clj[GitHub]
+image:https://img.shields.io/clojars/v/ai.z7/sqlg-clj.svg[]
+image:https://img.shields.io/github/v/tag/fern-flower-lab/sqlg-clj[GitHub tag (latest by date)]
+image:https://img.shields.io/github/last-commit/fern-flower-lab/sqlg-clj[GitHub last commit]
+
 == Supported DBs
 
 . PostgreSQL
