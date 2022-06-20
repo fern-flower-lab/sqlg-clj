@@ -99,7 +99,7 @@ respectively.
 
 === More info
 
-Please, read original documentation http://sqlg.org[here]
+Please, read original documentation https://tinkerpop.apache.org/docs/current/reference[here] and http://sqlg.org[here]
 
 == License
 
