@@ -98,8 +98,6 @@ Please, read original documentation http://sqlg.org[here]
 
 == License
 
-&copy;
-
-2022 Fern Flower Lab
+&copy;2022 Fern Flower Lab
 
 Distributed under the MIT License.
