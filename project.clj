@@ -9,6 +9,7 @@
                  [com.google.guava/guava "31.1-jre"]
                  [ai.z7/java-properties "1.0.1"]
 
+
                  [org.umlg/sqlg-postgres-dialect "2.1.6"
                   :exclusions [com.google.guava/guava]]
                  [org.umlg/sqlg-hsqldb-dialect "2.1.6"

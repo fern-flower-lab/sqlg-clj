@@ -11,7 +11,7 @@
            (clojure.lang IFn)
            (java.util.function BinaryOperator UnaryOperator)
            (java.util Comparator)
-           (org.umlg.sqlg.structure SqlgGraph)))
+           (org.umlg.sqlg.structure SqlgGraph SqlgVertex)))
 
 (po/import-macro anon/__)
 
@@ -54,9 +54,16 @@
      (.addV g ^GraphTraversal label-or-traversal)
      (.addV g ^String (util/cast-param label-or-traversal)))))
 
+(defmethod add-V SqlgGraph
+  ([^SqlgGraph g label] (.addVertex g ^String (util/cast-param label))))
+
 (def addV
   "Adds a vertex to the traversal. `addV` is equivalent to `add-V`."
   add-V)
+
+(defn addV* [^SqlgGraph g label & [m]]
+  (.addVertex g ^String (util/cast-param label)
+               (into {} (for [[k v] m] [(util/cast-param k) v]))))
 
 (defmulti add-E
           "Adds an edge to the traversal"
@@ -581,9 +588,19 @@
   [^GraphTraversal t k & ks]
   (.project t (util/cast-param k) (util/keywords-to-str-array ks)))
 
-(defn properties
+(defmulti properties
+          "Adds an object to the vertex or traversal."
+          (fn
+            ([g _] (class g))
+            ([g] (class g))))
+
+(defmethod properties GraphTraversal
   [^GraphTraversal t & ks]
   (.properties t (util/keywords-to-str-array ks)))
+
+(defmethod properties SqlgVertex
+  [^SqlgVertex v & ks]
+  (.properties v (util/keywords-to-str-array ks)))
 
 (defn property
   [^GraphTraversal t & args]
