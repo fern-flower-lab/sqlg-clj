@@ -1,7 +1,9 @@
 (ns sqlg-clj.util
   (:import (java.util.function Function Consumer Predicate BiPredicate BiFunction BinaryOperator UnaryOperator Supplier)
            (org.apache.tinkerpop.gremlin.process.traversal Traversal)
-           (org.umlg.sqlg.structure SqlgGraph)))
+           (org.umlg.sqlg.structure SqlgGraph)
+           (clojure.lang PersistentArrayMap)
+           (java.util Map HashMap)))
 
 ;; transaction finishers
 
@@ -74,6 +76,10 @@
   "Checks if the given value is either a string or keyword."
   [value]
   (clojure.core/or (string? value) (keyword? value)))
+
+(defn map->native ^Map [m]
+  (HashMap. ^PersistentArrayMap
+            (into {} (for [[k v] m] [(cast-param k) v]))))
 
 (defn ^Function f-to-function [f]
   "Converts a function to java.util.function.Function."

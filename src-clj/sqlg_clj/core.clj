@@ -3,7 +3,7 @@
   (:require [potemkin :as po]
             [sqlg-clj.util :as util]
             [sqlg-clj.anon :as anon]
-            [clojure.tools.logging :as log])
+            [sqlg-clj.data :as data])
   (:import (org.apache.tinkerpop.gremlin.process.traversal Operator Order P Pop SackFunctions$Barrier Scope Traversal)
            (org.apache.tinkerpop.gremlin.process.remote RemoteConnection)
            (org.apache.tinkerpop.gremlin.structure Graph T Column VertexProperty$Cardinality Vertex)
@@ -55,15 +55,13 @@
      (.addV g ^String (util/cast-param label-or-traversal)))))
 
 (defmethod add-V SqlgGraph
-  ([^SqlgGraph g label] (.addVertex g ^String (util/cast-param label))))
+  ([^SqlgGraph g label] (data/addV g label)))
 
 (def addV
   "Adds a vertex to the traversal. `addV` is equivalent to `add-V`."
   add-V)
 
-(defn addV* [^SqlgGraph g label & [m]]
-  (.addVertex g ^String (util/cast-param label)
-               (into {} (for [[k v] m] [(util/cast-param k) v]))))
+(def addV* data/addV)
 
 (defmulti add-E
           "Adds an edge to the traversal"
