@@ -1,0 +1,17 @@
+<!-- See http://logback.qos.ch/manual/index.html -->
+<configuration scan="false">
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="${LOGLEVEL:-INFO}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="user" level="${LOGLEVEL:-INFO}" />
+    <logger name="com.mchange.v2.c3p0" level="WARN" />
+    <logger name="com.mchange.v2.log" level="WARN" />
+    <logger name="ch.qos.logback.classic" level="WARN" />
+    <logger name="org.umlg.sqlg.strategy" level="WARN" />
+</configuration>
