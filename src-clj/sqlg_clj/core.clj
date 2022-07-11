@@ -749,8 +749,11 @@
     (.until t (util/f-to-predicate pred-or-t))))
 
 (defn value
-  [^GraphTraversal t]
-  (.value t))
+  ([^GraphTraversal t]
+   (.value t))
+  ([^Vertex g k]
+   (try (.value g (util/cast-param k))
+        (catch IllegalStateException _ nil))))
 
 (defn value-map
   [^GraphTraversal t & args]
