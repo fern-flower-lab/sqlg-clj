@@ -114,7 +114,7 @@ user=> (-> G (d/add-V :test {:aa 33 :cc 44}))
 user=> (u/commit! G)
 nil
 
-user=> (def vxs (-> G traversal V (has-label :test) (has :aa) util/into-vec!))
+user=> (def vxs (-> G traversal V (has-label :test) (has :aa) u/into-vec!))
 #'user/vxs
 
 user=> (map #(value % :aa) vxs)
