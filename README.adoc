@@ -97,6 +97,34 @@ user=> (u/rollback! G)
 
 respectively.
 
+=== Examples
+
+==== create, find, process
+
+[source,clojure]
+----
+user=> (require '[sqlg-clj.util :as u])
+user=> (require '[sqlg-clj.data :as d])
+user=> (require '[sqlg-clj.core :refer :all])
+
+user=> (-> G (d/add-V :test {:aa 11 :bb 22}))
+#object[org.umlg.sqlg.structure.SqlgVertex 0x2e5e87e9 "v[public.test:::14]"]
+user=> (-> G (d/add-V :test {:aa 33 :cc 44}))
+#object[org.umlg.sqlg.structure.SqlgVertex 0x6ec0ead1 "v[public.test:::15]"]
+user=> (u/commit! G)
+nil
+
+user=> (def vxs (-> G traversal V (has-label :test) (has :aa) util/into-vec!))
+#'user/vxs
+
+user=> (map #(value % :aa) vxs)
+(11 33)
+user=> (map #(value % :bb) vxs)
+(22 nil)
+user=> (map #(value % :cc) vxs)
+(nil 44)
+----
+
 === More info
 
 Please, read original documentation https://tinkerpop.apache.org/docs/current/reference[here] and http://sqlg.org[here]
