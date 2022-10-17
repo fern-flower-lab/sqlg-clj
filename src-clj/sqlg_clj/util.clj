@@ -13,6 +13,13 @@
 (defn rollback! [^SqlgGraph g]
   (-> g .tx .rollback))
 
+(defmacro with-transaction
+  "Evaluates the given expression in a try/catch block and commits on success
+  or drops the changes on exception if caught."
+    [^SqlgGraph g & body]
+    `(try (do ~@body (commit! ~g))
+          (catch Throwable ~'_ (rollback! ~g))))
+
 ;; traversal terminators
 
 (defn iterate!
