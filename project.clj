@@ -3,10 +3,10 @@
   :url "https://github.com/fern-flower-lab/sqlg-clj"
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [potemkin "0.4.5"]
+                 [potemkin "0.4.6"]
                  [org.apache.commons/commons-configuration2 "2.8.0"]
                  [com.google.guava/guava "31.1-jre"]
-                 [ai.z7/java-properties "1.1.0"]
+                 [ai.z7/java-properties "1.1.1"]
 
                  [org.umlg/sqlg-postgres-dialect "2.1.6"
                   :exclusions [com.google.guava/guava]]
@@ -26,11 +26,11 @@
   :source-paths ["src-clj"]
   :java-source-paths ["src-java"]
   :profiles {:dev     {:global-vars  {*assert* true}
-                       :dependencies [[ch.qos.logback/logback-classic "1.2.11"
+                       :dependencies [[ch.qos.logback/logback-classic "1.4.4"
                                        :exclusions [org.slf4j/slf4j-api]]
-                                      [org.slf4j/jul-to-slf4j "1.7.36"]
-                                      [org.slf4j/jcl-over-slf4j "1.7.36"]
-                                      [org.slf4j/log4j-over-slf4j "1.7.36"]
+                                      [org.slf4j/jul-to-slf4j "2.0.3"]
+                                      [org.slf4j/jcl-over-slf4j "2.0.3"]
+                                      [org.slf4j/log4j-over-slf4j "2.0.3"]
                                       [org.clojure/tools.logging "1.2.4"]]
                        :junit        ["src-java"]}
              :uberjar {:aot :all}}
