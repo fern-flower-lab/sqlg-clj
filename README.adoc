@@ -132,6 +132,6 @@ Please, read original documentation https://tinkerpop.apache.org/docs/current/re
 
 == License
 
-&copy;2022 Fern Flower Lab
+&copy;2022-2023 Fern Flower Lab
 
 Distributed under the MIT License.
