@@ -6,22 +6,22 @@
                  [potemkin "0.4.6"]
                  [org.apache.commons/commons-configuration2 "2.8.0"]
                  [com.google.guava/guava "31.1-jre"]
-                 [ai.z7/java-properties "1.2.0"]
+                 [ai.z7/java-properties "1.2.1"]
 
-                 [org.umlg/sqlg-postgres-dialect "2.1.6"
+                 [org.umlg/sqlg-postgres-dialect "3.0.0"
                   :exclusions [com.google.guava/guava]]
-                 [org.umlg/sqlg-hsqldb-dialect "2.1.6"
+                 [org.umlg/sqlg-hsqldb-dialect "3.0.0"
                   :exclusions [com.google.guava/guava]]
-                 [org.umlg/sqlg-h2-dialect "2.1.6"
+                 [org.umlg/sqlg-h2-dialect "3.0.0"
                   :exclusions [com.google.guava/guava]]
-                 [org.umlg/sqlg-mariadb-dialect "2.1.6"
+                 [org.umlg/sqlg-mariadb-dialect "3.0.0"
                   :exclusions [com.google.guava/guava]]
-                 [org.umlg/sqlg-mysql-dialect "2.1.6"
+                 [org.umlg/sqlg-mysql-dialect "3.0.0"
                   :exclusions [mysql/mysql-connector-java
                                com.google.guava/guava]]
-                 [org.umlg/sqlg-mssqlserver-dialect "2.1.6"
+                 [org.umlg/sqlg-mssqlserver-dialect "3.0.0"
                   :exclusions [com.google.guava/guava]]
-                 [org.umlg/sqlg-c3p0 "2.1.6"
+                 [org.umlg/sqlg-c3p0 "3.0.0"
                   :exclusions [com.google.guava/guava]]]
   :source-paths ["src-clj"]
   :java-source-paths ["src-java"]
