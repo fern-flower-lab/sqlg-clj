@@ -80,6 +80,7 @@ When gets prepared BaseConfiguration or Configuration object as an argument - re
 
 [source,clojure]
 ----
+user=> (require '[sqlg-clj.core :refer :all])
 user=> (-> ^Graph G traversal V (has-label "label"))
 #object[org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal 0x3fffba3f "[GraphStep(vertex,[]), HasStep([~label.eq(label)])]"]
 ----
