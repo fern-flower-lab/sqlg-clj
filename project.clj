@@ -24,7 +24,7 @@
                  [org.umlg/sqlg-c3p0 "3.0.0"
                   :exclusions [com.google.guava/guava]]]
   :source-paths ["src-clj"]
-  :java-source-paths ["src-java"]
+  #_#_ :java-source-paths ["src-java"]
   :profiles {:dev     {:global-vars  {*assert* true}
                        :dependencies [[ch.qos.logback/logback-classic "1.4.5"
                                        :exclusions [org.slf4j/slf4j-api]]
@@ -32,7 +32,7 @@
                                       [org.slf4j/jcl-over-slf4j "2.0.6"]
                                       [org.slf4j/log4j-over-slf4j "2.0.6"]
                                       [org.clojure/tools.logging "1.2.4"]]
-                       :junit        ["src-java"]}
+                       #_#_:junit        ["src-java"]}
              :uberjar {:aot :all}}
   :plugins [[lein-junit "1.1.9"]]
   :global-vars {*warn-on-reflection* true
