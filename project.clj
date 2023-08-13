@@ -34,7 +34,7 @@
                                       [org.clojure/tools.logging "1.2.4"]]
                        #_#_:junit ["src-java"]}
              :uberjar {:aot :all}}
-  :provided {:javac-options ["-source" "9" "-target" "9" "-g:none"]}
+  :provided {:javac-options []}
   :plugins [[lein-junit "1.1.9"]]
   :global-vars {*warn-on-reflection* true
                 *assert*             false})
