@@ -68,9 +68,16 @@
 (defn cast-param
   "Value is either a T, String, or keyword. If it's a keyword, pass the name."
   [value]
-  (if (keyword value)
+  (if (keyword? value)
     (name value)
     value))
+
+(defn keywordize-param
+  "Whatever the value is, try to turn it into the keyword form"
+  [value]
+  (if (keyword? value)
+    value
+    (-> value str keyword)))
 
 (defn map-every-nth [f coll n]
   (map-indexed #(if (zero? (mod (inc %1) n)) (f %2) %2) coll))
@@ -84,9 +91,11 @@
   [value]
   (clojure.core/or (string? value) (keyword? value)))
 
-(defn map->native ^Map [m]
+(defn map->native ^Map [m & [{:keys [clj? keywordize?]}]]
   (HashMap. ^PersistentArrayMap
-            (into {} (for [[k v] m] [(cast-param k) v]))))
+            (into {} (for [[k v] m]
+                       [(if keywordize? (keywordize? k) (cast-param k))
+                        (if clj? (first v) v)]))))
 
 (defn ^Function f-to-function [f]
   "Converts a function to java.util.function.Function."
