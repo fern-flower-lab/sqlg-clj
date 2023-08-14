@@ -94,7 +94,7 @@
 (defn map->native ^Map [m & [{:keys [clj? keywordize?]}]]
   (HashMap. ^PersistentArrayMap
             (into {} (for [[k v] m]
-                       [(if keywordize? (keywordize? k) (cast-param k))
+                       [(if keywordize? (keywordize-param k) (cast-param k))
                         (if clj? (first v) v)]))))
 
 (defn ^Function f-to-function [f]
