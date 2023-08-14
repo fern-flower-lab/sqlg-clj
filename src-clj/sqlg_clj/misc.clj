@@ -3,5 +3,5 @@
             [sqlg-clj.core :refer [value-map]]))
 
 (defmacro select->clj [& t]
-  `(mapv #(util/map->native % {:keywordize? true :clj? true})
-         (-> ~@t value-map util/into-seq!)))
+  `(map #(util/map->native % {:keywordize? true :clj? true})
+        (-> ~@t value-map util/into-seq!)))
