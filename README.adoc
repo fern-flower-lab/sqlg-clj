@@ -129,6 +129,14 @@ user=> (map #(value % :cc) vxs)
 (nil 44)
 ----
 
+==== dealing with java native structures
+
+[source, clojure]
+----
+(select->clj ^Graph G traversal V (has-label "my-label") (has "id" #uuid "1622c1fe-41d7-4536-8138-ccfba8385678"))
+;; this returns lazy sequence of keywordized hashmaps
+----
+
 === More info
 
 Please, read original documentation https://tinkerpop.apache.org/docs/current/reference[here] and http://sqlg.org[here]
