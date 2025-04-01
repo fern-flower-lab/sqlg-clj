@@ -10,6 +10,47 @@ image:https://img.shields.io/github/v/release/fern-flower-lab/sqlg-clj?style=for
 
 WARNING: Origin's library uses J17 for releases (at least for 3.0.x versions), so independently on this Clojure library build you will be forced to use that version too.
 
+== Installation
+
+Add this dependency to your project.clj:
+
+[source,clojure]
+----
+[ai.z7/sqlg-clj "0.1.0"]
+----
+
+This library supports multiple versions of the SQLG library. To specify which version you want to use, activate the appropriate profile:
+
+For SQLG 3.1.1 (latest):
+[source,shell]
+----
+lein with-profile +lib-3.1.1 <command>
+----
+
+For SQLG 3.0.4:
+[source,shell]
+----
+lein with-profile +lib-3.0.4 <command>
+----
+
+For SQLG 3.0.1:
+[source,shell]
+----
+lein with-profile +lib-3.0.1 <command>
+----
+
+For SQLG 2.1.6 (legacy):
+[source,shell]
+----
+lein with-profile +lib-2.1.6 <command>
+----
+
+For development with logging enabled:
+[source,shell]
+----
+lein with-profile +dev,+logging,+lib-3.1.1 <command>
+----
+
 == Supported DBs
 
 . PostgreSQL
@@ -141,8 +182,89 @@ user=> (map #(value % :cc) vxs)
 
 Please, read original documentation https://tinkerpop.apache.org/docs/current/reference[here] and http://sqlg.org[here]
 
+== Development
+
+=== Checking for Dependency Updates
+
+This project uses the lein-ancient plugin to check for outdated dependencies. You can run:
+
+[source,shell]
+----
+lein ancient check
+----
+
+To automatically upgrade all outdated dependencies:
+
+[source,shell]
+----
+lein ancient upgrade :interactive
+----
+
+=== Project Structure
+
+The project follows standard Clojure conventions:
+
+* `src-clj/` - Source code
+* `resources/` - Configuration files
+* `project.clj` - Core project definition (kept clean for publishing)
+* `profiles.clj` - Development profiles and version overrides
+
+=== Building
+
+[source,shell]
+----
+# Compile
+lein compile
+
+# Start a REPL
+lein repl
+
+# Create a JAR
+lein jar
+
+# Deploy to repositories
+lein deploy
+----
+
+=== Testing
+
+The library includes tests that demonstrate core functionality with examples from this README. Tests are designed to work with a PostgreSQL database.
+
+Setup test database:
+[source,shell]
+----
+./test/setup_test_db.sh
+----
+
+Run tests with a specific SQLG version:
+[source,shell]
+----
+# Latest version
+lein with-profile +dev,+logging,+lib-3.1.1 test
+
+# Legacy version
+lein with-profile +dev,+logging,+lib-2.1.6 test
+----
+
+Run tests with all supported SQLG versions:
+[source,shell]
+----
+./test/run_all_version_tests.sh
+----
+
+Test environment variables:
+[source,shell]
+----
+# Configure test database connection
+export SQLG_TEST_HOST=localhost
+export SQLG_TEST_PORT=5432
+export SQLG_TEST_DB=sqlgtest
+export SQLG_TEST_USER=postgres
+export SQLG_TEST_PASS=postgres
+----
+
 == License
 
-&copy;2022-2023 Fern Flower Lab
+&copy;2022-2025 Fern Flower Lab
 
-Distributed under the MIT License.
+Distributed under the MIT Licence.

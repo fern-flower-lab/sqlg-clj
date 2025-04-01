@@ -16,14 +16,14 @@
 (defmacro with-transaction
   "Evaluates the given expression in a try/catch block and commits on success
   or drops the changes on exception if caught."
-    [^SqlgGraph g & body]
-    `(try (do ~@body (commit! ~g))
-          (catch Throwable ~'_ (rollback! ~g))))
+  [^SqlgGraph g & body]
+  `(try (do ~@body (commit! ~g))
+        (catch Throwable ~'_ (rollback! ~g))))
 
 ;; traversal terminators
 
 (defn iterate!
-  "Iterates the traversal with the intent of producing side-effects."
+  "Iterates the traversal with the intent of producing side effects."
   [^Traversal t]
   (.iterate t))
 
@@ -79,10 +79,14 @@
     value
     (-> value str keyword)))
 
-(defn map-every-nth [f coll n]
+(defn map-every-nth
+  "Applies function f to every nth element in the collection."
+  [f coll n]
   (map-indexed #(if (zero? (mod (inc %1) n)) (f %2) %2) coll))
 
-(defn cast-every-other-param
+(defn ^"[Ljava.lang.Object;" cast-every-other-param
+  "Converts a collection to an array, applying cast-param to every other item.
+   Useful for converting key-value parameters where keys need casting."
   [coll]
   (to-array (map-every-nth (fn [i] (cast-param i)) coll 1)))
 
@@ -141,3 +145,17 @@
   "Converts a function to java.util.function.BiPredicate."
   (reify BiPredicate
     (test [this a b] (f a b))))
+
+(defn inspect-vertex
+  "Development helper: Prints the properties of a vertex in a readable form.
+   
+   Parameters:
+     v - The vertex to inspect
+   
+   Returns the vertex for chaining."
+  [v]
+  (println "Vertex:" (.id v) "Label:" (.label v))
+  (println "Properties:")
+  (doseq [[k val] (into {} (.valueMap v))]
+    (println " " k "=" (if (vector? val) (first val) val)))
+  v)
