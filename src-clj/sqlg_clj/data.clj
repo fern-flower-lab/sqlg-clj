@@ -51,6 +51,10 @@
 (def addV add-V)
 
 (defn add-E [^Vertex v-from ^Vertex v-to label & params]
-  (.addEdge v-from (util/cast-param label) v-to (util/cast-every-other-param params)))
+  (if (and (= (count params) 1) (map? (first params)))
+    (let [properties (first params)
+          property-array (util/cast-every-other-param (mapcat identity properties))]
+      (.addEdge v-from (util/cast-param label) v-to property-array))
+    (.addEdge v-from (util/cast-param label) v-to (util/cast-every-other-param params))))
 
 (def addE add-E)

@@ -6,9 +6,23 @@
            (org.apache.tinkerpop.gremlin.structure.util GraphFactory)
            (java.util Map)))
 
-(def load-config jconf/load-config)
+(def ^{:doc "Load configuration from properties files.
+            Delegates to java-properties.core/load-config."}
+  load-config jconf/load-config)
 
-(defn db-config ^Configuration [{:keys [type host port name user pass]}]
+(defn db-config
+  "Creates a Configuration object from a map of database parameters.
+   
+   Expected keys:
+     :type - Database type (e.g. 'postgresql')
+     :host - Database host
+     :port - Database port
+     :name - Database name
+     :user - Database username (optional)
+     :pass - Database password (optional)
+   
+   Returns an Apache Commons Configuration object ready for use with SqlgGraph."
+  ^Configuration [{:keys [type host port name user pass]}]
   (let [conf (doto (BaseConfiguration.)
                (.addProperty "jdbc.url"
                              (format "jdbc:%s://%s:%s/%s"
@@ -17,19 +31,37 @@
     (when pass (.addProperty conf "jdbc.password" (str pass)))
     conf))
 
-(defn config->clj [^Configuration cf]
+(defn config->clj
+  "Converts an Apache Commons Configuration object to a Clojure map.
+   
+   Parameters:
+     cf - The Configuration object to convert
+   
+   Returns a map of configuration properties."
+  [^Configuration cf]
   (into {} (ConfigurationConverter/getMap cf)))
 
-;; Local SQLGraph instance
-(defn graph ^Graph [^Configuration config]
+(defn graph
+  "Creates a SqlgGraph instance from a Configuration.
+   
+   Parameters:
+     config - An Apache Commons Configuration object (typically created with db-config)
+   
+   Returns a Graph instance with the specified configuration."
+  ^Graph [^Configuration config]
   (SqlgGraph/open config))
 
-; GraphFactory
 (defn open-graph
   "Opens a new TinkerGraph with default configuration or open a new Graph instance with the specified
    configuration. The configuration may be a path to a file or a Map of configuration options.
-   In order to get an SqlgGraph instance - pass prepared BaseConfiguration or Configuration object as
-   an argument."
+   
+   Parameters:
+     conf - One of:
+            - Apache Commons Configuration object (returns SqlgGraph)
+            - Clojure map of configuration options
+            - String path to a configuration file
+   
+   Returns a Graph instance with the specified configuration."
   ([conf]
    (cond
      (instance? Configuration conf)
